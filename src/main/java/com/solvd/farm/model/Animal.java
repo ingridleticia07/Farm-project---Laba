@@ -2,15 +2,18 @@ package com.solvd.farm.model;
 
 import com.solvd.farm.interfaces.Feedable;
 import com.solvd.farm.model.BiologicalAsset;
+import com.solvd.farm.enums.AnimalType;
 
 public class Animal extends BiologicalAsset implements Feedable {
     private int count;
     private double foodPerDay;
+    private AnimalType type;
 
-    public Animal(String name, int count, double foodPerDay) {
+    public Animal(String name, int count, double foodPerDay, AnimalType type) {
         super(name);
         this.count = count;
         this.foodPerDay = foodPerDay;
+        this.type = type;
     }
 
     public double calculateFoodCost(int days) {
@@ -19,7 +22,7 @@ public class Animal extends BiologicalAsset implements Feedable {
 
     @Override
     public String toString() {
-        return "Animal{" + "name=" + name + ", foodPerDay=" + foodPerDay + '}';
+        return "Animal{" + "name=" + name + ", foodPerDay=" + foodPerDay + "type=" + type + '}';
     }
 
     @Override

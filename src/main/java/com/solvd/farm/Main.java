@@ -1,5 +1,8 @@
 package com.solvd.farm;
 
+import com.solvd.farm.enums.AnimalType;
+import com.solvd.farm.enums.ProductType;
+import com.solvd.farm.enums.SeasonType;
 import com.solvd.farm.exception.InsufficientFundsException;
 import com.solvd.farm.exception.InsufficientResourcesException;
 import com.solvd.farm.exception.NoProfitException;
@@ -11,6 +14,7 @@ import com.solvd.farm.model.*;
 import com.solvd.farm.util.ReportGenerator;
 import com.solvd.farm.util.Storage;
 
+import com.solvd.farm.util.TextAnalyzer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,9 +39,9 @@ public class Main {
         cropSet.add(wheat);
 
 
-        Animal chicken = new Animal("Chicken", 40, 2);
-        Animal pig = new Animal("Pork", 12, 2);
-        Animal cow = new Animal("Cow", 30, 4);
+        Animal chicken = new Animal("Chicken", 40, 2, AnimalType.CHICKEN);
+        Animal pig = new Animal("Pig", 12, 2, AnimalType.PIG);
+        Animal cow = new Animal("Cow", 30, 4,  AnimalType.COW);
         Storage<Animal> animalStorage = new Storage<>();
         animalStorage.add(cow);
         animalStorage.add(pig);
@@ -63,9 +67,9 @@ public class Main {
         foodStorage.add(animalFeed);
         foodStorage.add(grainStorage);
 
-        Product eggs = new Product("Eggs", 10, 500);
-        Product milk = new Product("Milk", 3, 250);
-        Product pork = new Product("Pork", 5, 100);
+        Product eggs = new Product("Eggs", 10, 500, ProductType.EGGS);
+        Product milk = new Product("Milk", 3, 250, ProductType.MILK);
+        Product pork = new Product("Pork", 5, 100, ProductType.PORK);
         Storage<Sellable> productStorage = new Storage<>();
         productStorage.add(milk);
         productStorage.add(pork);
@@ -78,7 +82,7 @@ public class Main {
         productsMap.put("pork", pork);
 
 
-        Season autumn = new Season("Autumn", 120);
+        Season autumn = new Season(SeasonType.AUTUMN, 120);
 
         Expense fertilizer = new Expense("Fertilizer", 400);
         Expense equipmentRepair = new Expense("Equipment Repair", 250);
@@ -142,6 +146,8 @@ public class Main {
         } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage());
         }
+
+        TextAnalyzer.analyze("input.txt", "output.txt");
     }
 
 }

@@ -1,20 +1,26 @@
 package com.solvd.farm.model;
+import com.solvd.farm.enums.SeasonType;
 
 public class Season {
-    private String seasonName;
+    private SeasonType type;
     private int duration;
 
-    public Season(String seasonName, int duration) {
-        this.seasonName = seasonName;
+    public Season(SeasonType type, int duration) {
+        this.type = type;
         this.duration = duration;
     }
 
-    public String getSeasonName() {
-        return seasonName;
+    @Override
+    public String toString() {
+        return "Season{type=" + type + ", duration=" + duration + "}";
     }
 
-    public void setSeasonName(String seasonName) {
-        this.seasonName = seasonName;
+    public SeasonType  getType() {
+        return type;
+    }
+
+    public void setType(SeasonType type) {
+        this.type = type;
     }
 
     public int getDuration() {

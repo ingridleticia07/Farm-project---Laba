@@ -1,15 +1,18 @@
 package com.solvd.farm.model;
 
 import com.solvd.farm.interfaces.Sellable;
+import com.solvd.farm.enums.ProductType;
 
 public class Product extends FarmProduct implements Sellable {
     private double price;
     private int quantity;
+    private ProductType type;
 
-    public  Product(String name, double price, int quantity) {
+    public  Product(String name, double price, int quantity, ProductType type) {
         super(name);
         this.price = price;
         this.quantity = quantity;
+        this.type = type;
     }
 
     @Override
@@ -19,7 +22,7 @@ public class Product extends FarmProduct implements Sellable {
 
     @Override
     public String toString() {
-        return "Product{" + "name=" + name + ", price=" + price + ", quantity=" + quantity + '}';
+        return "Product{" + "name=" + name + ", price=" + price + ", quantity=" + quantity +  ", type=" + type + '}';
     }
 
     @Override
