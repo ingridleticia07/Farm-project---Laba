@@ -30,7 +30,7 @@ public class TextAnalyzer {
                 result.append(word).append(": ").append(count).append("\n");
             }
 
-            File file = new File("output.txt");
+            File file = new File("src/main/resources/output.txt");
             FileUtils.writeStringToFile(file, String.valueOf(result), StandardCharsets.UTF_8, true);
 
         } catch (Exception e) {
