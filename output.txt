@@ -1,0 +1,6 @@
+
+=== ANALYSIS ===
+farm: 6
+animal: 6
+food: 5
+profit: 3

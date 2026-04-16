@@ -4,12 +4,11 @@ import com.solvd.farm.exception.InsufficientFundsException;
 import com.solvd.farm.exception.InsufficientResourcesException;
 import com.solvd.farm.exception.NoProfitException;
 import com.solvd.farm.interfaces.*;
-import com.solvd.farm.model.Farmer;
-import com.solvd.farm.model.FoodSupply;
-import com.solvd.farm.model.Season;
-import com.solvd.farm.util.Calculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.solvd.farm.functional.CostCalculator;
+import com.solvd.farm.functional.RevenueCalculator;
+import com.solvd.farm.functional.FoodCalculator;
 
 import java.util.Arrays;
 
@@ -60,11 +59,15 @@ public class Farm implements Reportable {
 
         logger.info("===== Processing Season =====");
 
-        Calculator<Costable> calculator = new Calculator<>();
-        Calculator<Sellable> revenueCalculator = new Calculator<>();
-        Calculator<Maintainable> maintainerCalculator = new Calculator<>();
+        CostCalculator<Costable> costCalculator = item -> item.calculateCost();
+        RevenueCalculator<Sellable> revenueCalculator = item -> item.calculateRevenue();
+        FoodCalculator<Feedable> foodCalculator = (animal, days) -> animal.calculateFoodNeeded(days);
 
-        totalCropCost = calculator.calculateTotal(Arrays.asList(crops));
+//        Calculator<Costable> calculator = new Calculator<>();
+//        Calculator<Sellable> revenueCalculator = new Calculator<>();
+//        Calculator<Maintainable> maintainerCalculator = new Calculator<>();
+
+        totalCropCost = Arrays.stream(crops).mapToDouble(costCalculator::calculate).sum();
 
 //        for (Costable item : crops) {
 //            totalCropCost += item.calculateCost();
@@ -74,16 +77,17 @@ public class Farm implements Reportable {
 //        for (Costable item : foodSupplies) {
 //            totalFoodSupplyCost += item.calculateCost();
 //        }
-        totalFoodSupplyCost = calculator.calculateTotal(Arrays.asList(foodSupplies));
+        totalFoodSupplyCost = Arrays.stream(foodSupplies).mapToDouble(costCalculator::calculate).sum();
         logger.info("Food Supply cost: {}", totalFoodSupplyCost);
 
-        double totalFoodNeeded = 0;
+        double totalFoodNeeded = Arrays.stream(animals).mapToDouble(animal -> foodCalculator.calculate(animal, season.getDuration())).sum();
+        totalFoodCost = totalFoodNeeded * animalFeed.getCostPerUnit();
 
-        for (Feedable animal : animals) {
-            double foodNeeded = animal.calculateFoodNeeded(season.getDuration());
-            totalFoodNeeded += foodNeeded;
-            totalFoodCost += foodNeeded * animalFeed.getCostPerUnit();
-        }
+//        for (Feedable animal : animals) {
+//            double foodNeeded = animal.calculateFoodNeeded(season.getDuration());
+//            totalFoodNeeded += foodNeeded;
+//            totalFoodCost += foodNeeded * animalFeed.getCostPerUnit();
+//        }
 
         if (totalFoodNeeded > animalFeed.getAmount()) {
             throw new InsufficientResourcesException("Not enough food!");
@@ -94,21 +98,19 @@ public class Farm implements Reportable {
 //        for (Maintainable item : maintainables) {
 //            totalMaintenance += item.calculateMaintenanceCost();
 //        }
-        totalMaintenance = calculator.calculateMaintenanceTotal(Arrays.asList(maintainables));
+        totalMaintenance = Arrays.stream(maintainables).mapToDouble(Maintainable::calculateMaintenanceCost).sum();
         logger.info("Maintenance cost: {}", totalMaintenance);
 
-        double productRevenue = 0;
 //        for (Sellable item : products) {
 //            productRevenue += item.calculateRevenue();
 //        }
-        productRevenue = calculator.calculateRevenueTotal(Arrays.asList(products));
+        double productRevenue = Arrays.stream(products).mapToDouble(revenueCalculator::calculate).sum();
         logger.info("Product revenue: {}", productRevenue);
 
-        double harvestRevenue = 0;
 //        for (Sellable item : harvests) {
 //            harvestRevenue += item.calculateRevenue();
 //        }
-        harvestRevenue = calculator.calculateRevenueTotal(Arrays.asList(harvests));
+        double harvestRevenue = Arrays.stream(harvests).mapToDouble(revenueCalculator::calculate).sum();
         logger.info("Harvest revenue: {}", harvestRevenue);
 
         double totalRevenue = productRevenue + harvestRevenue;
